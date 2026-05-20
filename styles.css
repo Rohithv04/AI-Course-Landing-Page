@@ -791,7 +791,13 @@ p {
     gap: 3rem;
     max-width: 850px;
     margin: 0 auto;
-    padding-bottom: 6rem; /* Extra spacing at bottom so last card has room to scroll */
+    padding-bottom: 4rem;
+}
+
+@media (min-width: 768px) {
+    .modules-list {
+        padding-bottom: 24rem; /* Generous bottom spacing for sticky stacking */
+    }
 }
 
 /* Wrapper to hold natural height and spacing */
