@@ -796,7 +796,7 @@ p {
 
 @media (min-width: 768px) {
     .modules-list {
-        padding-bottom: 24rem; /* Generous bottom spacing for sticky stacking */
+        padding-bottom: 10rem; /* Adjusted bottom spacing for sticky stacking */
     }
 }
 
