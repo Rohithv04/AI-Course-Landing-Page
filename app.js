@@ -310,4 +310,97 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Run initial form setup
     initializeForm();
+
+    // 7. Curriculum Modules Accordion
+    const moduleCards = document.querySelectorAll('.module-card');
+    
+    // Set first module active by default
+    if (moduleCards.length > 0) {
+        moduleCards[0].classList.add('active');
+        const headerBtn = moduleCards[0].querySelector('.module-header-btn');
+        if (headerBtn) {
+            headerBtn.setAttribute('aria-expanded', 'true');
+        }
+    }
+    
+    moduleCards.forEach(card => {
+        const headerBtn = card.querySelector('.module-header-btn');
+        if (!headerBtn) return;
+        
+        headerBtn.addEventListener('click', () => {
+            const isActive = card.classList.contains('active');
+            
+            // Close all other modules
+            moduleCards.forEach(otherCard => {
+                if (otherCard !== card && otherCard.classList.contains('active')) {
+                    otherCard.classList.remove('active');
+                    const otherBtn = otherCard.querySelector('.module-header-btn');
+                    if (otherBtn) {
+                        otherBtn.setAttribute('aria-expanded', 'false');
+                    }
+                }
+            });
+            
+            // Toggle current module
+            if (isActive) {
+                card.classList.remove('active');
+                headerBtn.setAttribute('aria-expanded', 'false');
+            } else {
+                card.classList.add('active');
+                headerBtn.setAttribute('aria-expanded', 'true');
+            }
+            
+            // Smooth scroll into view when expanding
+            setTimeout(() => {
+                card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 300);
+        });
+    });
+
+    // 8. Stacked Cards Scroll Animation
+    const moduleWrappers = document.querySelectorAll('.module-card-wrapper');
+    const isDesktop = () => window.innerWidth >= 768;
+
+    function handleScrollStacking() {
+        if (!isDesktop()) {
+            // Reset styles on mobile/tablet viewports
+            moduleCards.forEach(card => {
+                card.style.transform = '';
+                card.style.opacity = '';
+            });
+            return;
+        }
+
+        moduleWrappers.forEach((wrapper, index) => {
+            // Don't apply scroll scaling to the last card
+            if (index === moduleWrappers.length - 1) return;
+
+            const card = wrapper.querySelector('.module-card');
+            if (!card) return;
+
+            const rect = wrapper.getBoundingClientRect();
+            // Calculate sticky start point based on CSS calc(95px + (var(--index) * 24px))
+            const stickyTop = 95 + (index * 24);
+            const scrolledPast = stickyTop - rect.top;
+
+            if (scrolledPast > 0) {
+                const range = 400; // Scroll distance over which the card shrinks/dims
+                const progress = Math.min(Math.max(scrolledPast / range, 0), 1);
+                
+                const scale = 1 - (progress * 0.08); // scale down to 0.92
+                const opacity = 1 - (progress * 0.4); // fade down to 0.6
+                
+                card.style.transform = `scale(${scale}) translateY(-${progress * 15}px)`;
+                card.style.opacity = `${opacity}`;
+            } else {
+                card.style.transform = 'scale(1) translateY(0px)';
+                card.style.opacity = '1';
+            }
+        });
+    }
+
+    window.addEventListener('scroll', handleScrollStacking);
+    window.addEventListener('resize', handleScrollStacking);
+    // Initial run to capture correct state
+    handleScrollStacking();
 });
